@@ -49,7 +49,14 @@ const VERSIONS: Set<string> = getVersions([
   "11.0.0", "11.0.1", "11.1.0",
   "12.0.0", "12.0.1",
   "13.0.0", "13.0.1",
-  "14.0.0"
+  "14.0.0",
+]);
+
+/** The specific and minimum LLVM-SBIP versions supported by this action.
+    Version should be suffixed byv `-vN`, where `N` is a number.
+ */
+const SBIPVERSIONS: Set<string> = getVersions([
+    "14.0.5-v1",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -83,6 +90,15 @@ function getSpecificVersions(version: string): string[] {
     .reverse();
 }
 
+/**
+ * Gets the specific LLVM-SBIP versions supported by this action.
+ * The version is filtered by exact matching.
+ */
+function getSbipSpecificVersions(version: string): string[] {
+    return Array.from(SBIPVERSIONS)
+        .filter(v => v === version);
+}
+
 //================================================
 // URL
 //================================================
@@ -91,6 +107,12 @@ function getSpecificVersions(version: string): string[] {
 function getGitHubUrl(version: string, prefix: string, suffix: string): string {
   const file = `${prefix}${version}${suffix}`;
   return `https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/${file}`;
+}
+
+/** Gets a SBIP-LLVM download URL for GitHub. */
+function getSbipGitHubUrl(version: string, prefix: string, suffix: string): string {
+    const file = `${prefix}${version}${suffix}`;
+    return `https://github.com/sbip-sg/llvm-project/releases/download/llvm-sbip-${version}/${file}`;
 }
 
 /** Gets a LLVM download URL for https://releases.llvm.org. */
@@ -210,6 +232,35 @@ function getLinuxUrl(version: string, options: Options): string | null {
   }
 }
 
+/** Gets an LLVM-SBIP download URL for the Linux (Ubuntu) platform. */
+function getSbipLinuxUrl(version: string, options: Options): string | null {
+    const rc = UBUNTU_RC.get(version);
+    if (rc) {
+        version = rc;
+    }
+
+    let ubuntu;
+    if (options.ubuntuVersion) {
+        ubuntu = `-ubuntu-${options.ubuntuVersion}`;
+    } else if (options.forceVersion) {
+        ubuntu = UBUNTU[MAX_UBUNTU];
+    } else {
+        ubuntu = UBUNTU[version];
+    }
+
+    if (!ubuntu) {
+        return null;
+    }
+
+    const prefix = "llvm-sbip";
+    const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
+    if (compareVersions(version, "9.0.1") >= 0) {
+        return getSbipGitHubUrl(version, prefix, suffix);
+    } else {
+        return getReleaseUrl(version, prefix, suffix);
+    }
+}
+
 /** The LLVM versions that were never released for the Windows platform. */
 const WIN32_MISSING: Set<string> = new Set([
   "10.0.1",
@@ -236,7 +287,8 @@ function getUrl(platform: string, version: string, options: Options): string | n
     case "darwin":
       return getDarwinUrl(version, options);
     case "linux":
-      return getLinuxUrl(version, options);
+      // return getLinuxUrl(version, options);
+      return getSbipLinuxUrl(version, options);
     case "win32":
       return getWin32Url(version, options);
     default:
@@ -264,6 +316,26 @@ export function getSpecificVersionAndUrl(platform: string, options: Options): [s
   throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
 }
 
+/** Gets the most recent specific LLVM-SBIP version for which there is a valid download URL. */
+export function getSbipSpecificVersionAndUrl(platform: string, options: Options): [string, string] {
+    if (options.forceVersion) {
+        return [options.version, getUrl(platform, options.version, options)!];
+    }
+
+    if (!VERSIONS.has(options.version)) {
+        throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
+    }
+
+    for (const specificVersion of getSbipSpecificVersions(options.version)) {
+        const url = getUrl(platform, specificVersion, options);
+        if (url) {
+            return [specificVersion, url];
+        }
+    }
+
+    throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
+}
+
 //================================================
 // Action
 //================================================
@@ -273,7 +345,8 @@ const DEFAULT_WIN32_DIRECTORY = "C:/Program Files/LLVM";
 
 async function install(options: Options): Promise<void> {
   const platform = process.platform;
-  const [specificVersion, url] = getSpecificVersionAndUrl(platform, options);
+  // const [specificVersion, url] = getSpecificVersionAndUrl(platform, options);
+  const [specificVersion, url] = getSbipSpecificVersionAndUrl(platform, options);
   core.setOutput("version", specificVersion);
 
   console.log(`Installing LLVM and Clang ${options.version} (${specificVersion})...`);
