@@ -256,7 +256,7 @@ var $ficLE = parcelRequire("ficLE");
     if (rc) version = rc;
     let ubuntu = SBIP_UBUNTU[version];
     if (!ubuntu) return null;
-    const prefix = "llvm-sbip";
+    const prefix = "llvm-sbip-";
     const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
     return getSbipGitHubUrl(version, prefix, suffix);
 }

@@ -250,7 +250,7 @@ function getSbipLinuxUrl(version: string, options: Options): string | null {
         return null;
     }
 
-    const prefix = "llvm-sbip";
+    const prefix = "llvm-sbip-";
     const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
     return getSbipGitHubUrl(version, prefix, suffix);
 }
