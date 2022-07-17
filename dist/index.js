@@ -122,9 +122,9 @@ var $ficLE = parcelRequire("ficLE");
 ]);
 /** The specific and minimum LLVM-SBIP versions supported by this action.
     Version should be suffixed byv `-vN`, where `N` is a number.
- */ const SBIPVERSIONS = [
+ */ const SBIPVERSIONS = new Set([
     "14.0.5-v1", 
-];
+]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
     const leftComponents = left.split(".").map((c)=>parseInt(c, 10)
     );

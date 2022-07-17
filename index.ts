@@ -55,9 +55,9 @@ const VERSIONS: Set<string> = getVersions([
 /** The specific and minimum LLVM-SBIP versions supported by this action.
     Version should be suffixed byv `-vN`, where `N` is a number.
  */
-const SBIPVERSIONS: Set<string> = [
+const SBIPVERSIONS: Set<string> = new Set([
     "14.0.5-v1",
-];
+]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
 function compareVersions(left: string, right: string): -1 | 0 | 1 {
