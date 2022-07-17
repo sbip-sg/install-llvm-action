@@ -311,7 +311,7 @@ export function getSbipSpecificVersionAndUrl(platform: string, options: Options)
         return [options.version, getUrl(platform, options.version, options)!];
     }
 
-    if (!VERSIONS.has(options.version)) {
+    if (!SBIPVERSIONS.has(options.version)) {
         throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
     }
 
