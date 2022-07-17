@@ -239,14 +239,7 @@ function getSbipLinuxUrl(version: string, options: Options): string | null {
         version = rc;
     }
 
-    let ubuntu;
-    if (options.ubuntuVersion) {
-        ubuntu = `-ubuntu-${options.ubuntuVersion}`;
-    } else if (options.forceVersion) {
-        ubuntu = UBUNTU[MAX_UBUNTU];
-    } else {
-        ubuntu = UBUNTU[version];
-    }
+    let ubuntu = UBUNTU[version];
 
     if (!ubuntu) {
         return null;
@@ -254,11 +247,7 @@ function getSbipLinuxUrl(version: string, options: Options): string | null {
 
     const prefix = "llvm-sbip";
     const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
-    if (compareVersions(version, "9.0.1") >= 0) {
-        return getSbipGitHubUrl(version, prefix, suffix);
-    } else {
-        return getReleaseUrl(version, prefix, suffix);
-    }
+    return getSbipGitHubUrl(version, prefix, suffix);
 }
 
 /** The LLVM versions that were never released for the Windows platform. */
