@@ -122,7 +122,7 @@ var $ficLE = parcelRequire("ficLE");
 ]);
 /** The specific and minimum LLVM-SBIP versions supported by this action.
     Version should be suffixed byv `-vN`, where `N` is a number.
- */ const SBIPVERSIONS = new Set([
+ */ const SBIP_VERSIONS = new Set([
     "14.0.5-v1", 
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
@@ -151,7 +151,7 @@ var $ficLE = parcelRequire("ficLE");
  * Gets the specific LLVM-SBIP versions supported by this action.
  * The version is filtered by exact matching.
  */ function getSbipSpecificVersions(version) {
-    return Array.from(SBIPVERSIONS).filter((v)=>v === version
+    return Array.from(SBIP_VERSIONS).filter((v)=>v === version
     );
 }
 //================================================
@@ -234,6 +234,9 @@ var $ficLE = parcelRequire("ficLE");
     "13.0.1": "-ubuntu-18.04",
     "14.0.0": "-ubuntu-18.04"
 };
+/** The (latest) Ubuntu versions for each LLVM version. */ const SBIP_UBUNTU = {
+    "14.0.5-v1": "-ubuntu-20.04"
+};
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "14.0.0";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */ function getLinuxUrl(version, options) {
     const rc = UBUNTU_RC.get(version);
@@ -251,7 +254,7 @@ var $ficLE = parcelRequire("ficLE");
 /** Gets an LLVM-SBIP download URL for the Linux (Ubuntu) platform. */ function getSbipLinuxUrl(version, options) {
     const rc = UBUNTU_RC.get(version);
     if (rc) version = rc;
-    let ubuntu = UBUNTU[version];
+    let ubuntu = SBIP_UBUNTU[version];
     if (!ubuntu) return null;
     const prefix = "llvm-sbip";
     const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
@@ -272,10 +275,17 @@ var $ficLE = parcelRequire("ficLE");
         case "darwin":
             return getDarwinUrl(version, options);
         case "linux":
-            // return getLinuxUrl(version, options);
-            return getSbipLinuxUrl(version, options);
+            return getLinuxUrl(version, options);
         case "win32":
             return getWin32Url(version, options);
+        default:
+            return null;
+    }
+}
+/** Gets an LLVM-SBIP download URL. */ function getSbipUrl(platform, version, options) {
+    switch(platform){
+        case "linux":
+            return getSbipLinuxUrl(version, options);
         default:
             return null;
     }
@@ -298,11 +308,11 @@ function getSpecificVersionAndUrl(platform, options) {
 function getSbipSpecificVersionAndUrl(platform, options) {
     if (options.forceVersion) return [
         options.version,
-        getUrl(platform, options.version, options)
+        getSbipUrl(platform, options.version, options)
     ];
-    if (!SBIPVERSIONS.has(options.version)) throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
+    if (!SBIP_VERSIONS.has(options.version)) throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
     for (const specificVersion of getSbipSpecificVersions(options.version)){
-        const url = getUrl(platform, specificVersion, options);
+        const url = getSbipUrl(platform, specificVersion, options);
         if (url) return [
             specificVersion,
             url
