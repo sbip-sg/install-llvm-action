@@ -57,6 +57,7 @@ const VERSIONS: Set<string> = getVersions([
  */
 const SBIP_VERSIONS: Set<string> = new Set([
     "14.0.5-v1",
+    "14.0.5-v2",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -203,6 +204,7 @@ const UBUNTU: { [key: string]: string } = {
 /** The (latest) Ubuntu versions for each LLVM version. */
 const SBIP_UBUNTU: { [key: string]: string } = {
   "14.0.5-v1": "-ubuntu-20.04",
+  "14.0.5-v2": "-ubuntu-20.04",
 };
 
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
