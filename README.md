@@ -1,4 +1,32 @@
-# install-llvm-action
+# install-llvm-action for LLVM-SBIP
+
+This README section is for compiling and releasing a customized GitHub Action
+for [LLVM-SBIP](https://github.com/sbip-sg/llvm-project). The original READ is at the end of this file.
+
+There are three steps as follows:
+
+
+1. Install NPM dependencies:
+
+  ```sh
+  sudo npm install -g parcel
+  npm install
+  ```
+
+2. Make necessary editing on the TypeScript action file `index.ts`, and then
+   compile it to JavaScript.
+
+  ```sh
+  make
+  ```
+
+3. Commit all the changes, create a new tag, and release the GitHub action.
+
+   See the [Releases page](https://github.com/sbip-sg/install-llvm-action/releases) for more information.
+
+
+-------------------------------------------------------------------------------------
+# Original README of install-llvm-action
 
 A GitHub Action for downloading and installing LLVM and Clang binaries.
 

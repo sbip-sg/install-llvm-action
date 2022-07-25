@@ -124,7 +124,8 @@ var $ficLE = parcelRequire("ficLE");
     Version should be suffixed byv `-vN`, where `N` is a number.
  */ const SBIP_VERSIONS = new Set([
     "14.0.5-v1",
-    "14.0.5-v2", 
+    "14.0.5-v2",
+    "14.0.5-v3", 
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
     const leftComponents = left.split(".").map((c)=>parseInt(c, 10)
@@ -237,7 +238,8 @@ var $ficLE = parcelRequire("ficLE");
 };
 /** The (latest) Ubuntu versions for each LLVM version. */ const SBIP_UBUNTU = {
     "14.0.5-v1": "-ubuntu-20.04",
-    "14.0.5-v2": "-ubuntu-20.04"
+    "14.0.5-v2": "-ubuntu-20.04",
+    "14.0.5-v3": "-ubuntu-20.04"
 };
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "14.0.0";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */ function getLinuxUrl(version, options) {
